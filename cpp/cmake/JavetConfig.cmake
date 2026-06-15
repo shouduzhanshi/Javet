@@ -66,12 +66,14 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     else()
         message(FATAL_ERROR "CMAKE_ANDROID_ARCH must be one of arm, arm64, x86, x86_64.")
     endif()
-    # The target ABI version is set to 24 because pre-24 is no longer supported by V8 v11+.
+    if(NOT DEFINED JAVET_ANDROID_API)
+        set(JAVET_ANDROID_API 21)
+    endif()
     # Keep V8 and Node builds below API 29 so Clang uses emulated TLS; API 29+ emits
     # ELF TLS relocations that older Android linkers reject at dlopen().
     # https://github.com/android/ndk/issues/1179
     if(DEFINED V8_DIR OR DEFINED NODE_DIR)
-        set(CMAKE_SYSTEM_VERSION 24)
+        set(CMAKE_SYSTEM_VERSION ${JAVET_ANDROID_API})
     endif()
     set(CMAKE_ANDROID_STL_TYPE c++_static)
     set(JAVA_RESOURCES_DIR ${CMAKE_SOURCE_DIR}/../android/javet-android/src/main/jniLibs/${CMAKE_ANDROID_ARCH_ABI})

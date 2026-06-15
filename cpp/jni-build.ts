@@ -29,7 +29,7 @@
  *   deno run build --os linux --arch arm64 --v8-dir ${HOME}/v8
  *   deno run build --os macos --arch arm64 --v8-dir ${HOME}/v8
  *   deno run build --os windows --arch x86_64 --v8-dir C:\\v8
- *   deno run build --os android --arch arm64 --v8-dir ${HOME}/v8 --android-ndk ${HOME}/android
+ *   deno run build --os android --arch arm64 --v8-dir ${HOME}/v8 --android-ndk ${HOME}/android --android-api 21
  *
  *   # Node builds
  *   deno run build --os linux --arch x86_64 --node-dir ${HOME}/node
@@ -77,6 +77,7 @@ interface BuildConfig {
   v8Dir: string;
   nodeDir: string;
   androidNdk: string;
+  androidApi: number;
   cpuCount?: number;
   clean: boolean;
   logDebug: boolean;
@@ -87,7 +88,7 @@ interface BuildConfig {
 
 function parseArgs(): BuildConfig {
   const parsed = cli.parseArgs(Deno.args, {
-    string: ["os", "arch", "v8-dir", "node-dir", "android-ndk", "cpu-count"],
+    string: ["os", "arch", "v8-dir", "node-dir", "android-ndk", "android-api", "cpu-count"],
     boolean: ["i18n", "clean", "log-debug", "log-error", "log-info", "log-trace"],
     default: {
       "i18n": false,
@@ -95,6 +96,7 @@ function parseArgs(): BuildConfig {
       "v8-dir": "",
       "node-dir": "",
       "android-ndk": "",
+      "android-api": "21",
       "cpu-count": undefined,
       "log-debug": false,
       "log-error": false,
@@ -118,6 +120,7 @@ function parseArgs(): BuildConfig {
     console.info("  --v8-dir <path>     Path to V8 library directory");
     console.info("  --node-dir <path>   Path to Node.js library directory");
     console.info("  --android-ndk <path> Path to Android NDK (required for Android builds)");
+    console.info("  --android-api <n>   Android API level for native builds (default: 21)");
     console.info("  --cpu-count <n>     Number of CPU cores to use for parallel builds (default: auto-detect)");
     console.info("  --log-debug         Enable debug logging (default: false)");
     console.info("  --log-error         Enable error logging (default: false)");
@@ -174,6 +177,12 @@ function parseArgs(): BuildConfig {
     Deno.exit(1);
   }
 
+  const androidApi = parseInt(parsed["android-api"], 10);
+  if (isNaN(androidApi) || androidApi < 21) {
+    console.error(red(`Error: Invalid android-api '${parsed["android-api"]}'. Must be 21 or higher.`));
+    Deno.exit(1);
+  }
+
   return {
     os: os as OS,
     arch: arch as Arch,
@@ -181,6 +190,7 @@ function parseArgs(): BuildConfig {
     v8Dir,
     nodeDir,
     androidNdk,
+    androidApi,
     cpuCount,
     clean: parsed["clean"],
     logDebug: parsed["log-debug"],
@@ -773,6 +783,7 @@ async function buildAndroid(config: BuildConfig): Promise<boolean> {
     const androidArgs = [
       "-DCMAKE_SYSTEM_NAME=Android",
       `-DCMAKE_ANDROID_ARCH=${config.arch}`,
+      `-DJAVET_ANDROID_API=${config.androidApi}`,
     ];
 
     // Add Android NDK path if provided
@@ -831,6 +842,7 @@ async function main() {
   }
   if (config.androidNdk) {
     console.log(`  Android NDK: ${config.androidNdk}`);
+    console.log(`  Android API: ${config.androidApi}`);
   }
   if (config.cpuCount !== undefined) {
     console.log(`  CPU count: ${config.cpuCount}`);

@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 
 env:
+  JAVET_ANDROID_API: 21
   JAVET_V8_VERSION: 14.9.207.14
   JAVET_VERSION: 5.0.8
   TEMPORAL_VERSION: 0.2.3
@@ -124,7 +125,7 @@ jobs:
     - name: Build Javet JNI
       run: |
         cd ${{ env.ROOT }}/Javet/cpp
-        deno run build --os android --arch ${{ matrix.android_arch }} --v8-dir ${{ env.ROOT }}/google/v8 --android-ndk ${{ steps.setup-ndk.outputs.ndk-path }} ${{ matrix.i18n_flag }}
+        deno run build --os android --arch ${{ matrix.android_arch }} --v8-dir ${{ env.ROOT }}/google/v8 --android-ndk ${{ steps.setup-ndk.outputs.ndk-path }} --android-api ${{ env.JAVET_ANDROID_API }} ${{ matrix.i18n_flag }}
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
