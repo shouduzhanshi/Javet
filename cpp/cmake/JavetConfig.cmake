@@ -67,11 +67,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
         message(FATAL_ERROR "CMAKE_ANDROID_ARCH must be one of arm, arm64, x86, x86_64.")
     endif()
     # The target ABI version is set to 24 because pre-24 is no longer supported by V8 v11+.
+    # Keep V8 and Node builds below API 29 so Clang uses emulated TLS; API 29+ emits
+    # ELF TLS relocations that older Android linkers reject at dlopen().
     # https://github.com/android/ndk/issues/1179
-    if(DEFINED V8_DIR)
-        set(CMAKE_SYSTEM_VERSION 29)
-    endif()
-    if(DEFINED NODE_DIR)
+    if(DEFINED V8_DIR OR DEFINED NODE_DIR)
         set(CMAKE_SYSTEM_VERSION 24)
     endif()
     set(CMAKE_ANDROID_STL_TYPE c++_static)
