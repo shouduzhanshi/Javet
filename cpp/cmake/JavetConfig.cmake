@@ -67,7 +67,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
         message(FATAL_ERROR "CMAKE_ANDROID_ARCH must be one of arm, arm64, x86, x86_64.")
     endif()
     if(NOT DEFINED JAVET_ANDROID_API)
-        set(JAVET_ANDROID_API 21)
+        set(JAVET_ANDROID_API 24)
     endif()
     # Keep V8 and Node builds below API 29 so Clang uses emulated TLS; API 29+ emits
     # ELF TLS relocations that older Android linkers reject at dlopen().

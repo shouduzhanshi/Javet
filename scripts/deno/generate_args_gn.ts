@@ -183,9 +183,9 @@ class GnArgsGenerator {
 
     if (os === "android") {
       if (this.is64BitArch(arch)) {
-        config.android64_ndk_api_level = 21;
+        config.android64_ndk_api_level = 24;
       } else {
-        config.android32_ndk_api_level = 21;
+        config.android32_ndk_api_level = 24;
       }
     }
 
