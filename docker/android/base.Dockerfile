@@ -74,6 +74,8 @@ RUN apt-get install --upgrade -qq -y --no-install-recommends gcc-multilib
 # Build V8
 WORKDIR /google/v8
 COPY ./scripts/python/patch_v8_build.py .
+RUN find src -type f \( -name '*.cc' -o -name '*.h' -o -name '*.inc' \) -exec sed -i 's/__attribute__((tls_model(V8_TLS_MODEL)))/ /g' {} +
+RUN sed -i '/cflags += \[ "--target=\$android_abi_target\$android_ndk_api_level" \]/i\  cflags += [ "-femulated-tls" ]' build/config/android/BUILD.gn
 RUN python3 tools/dev/v8gen.py arm.release -- 'target_os="android"' 'target_cpu="arm"' 'v8_target_cpu="arm"' default_min_sdk_version=24 android_ndk_api_level=24 v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false
 RUN ninja -C out.gn/arm.release v8_monolith || python3 patch_v8_build.py -p ./
 RUN ninja -C out.gn/arm.release v8_monolith
