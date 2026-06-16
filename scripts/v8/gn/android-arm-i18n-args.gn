@@ -1,7 +1,8 @@
-android32_ndk_api_level = 24
+android_ndk_api_level = 24
 clang_use_chrome_plugins = false
 compiler_timing = false
 dcheck_always_on = false
+default_min_sdk_version = 24
 is_component_build = false
 is_debug = false
 is_official_build = false

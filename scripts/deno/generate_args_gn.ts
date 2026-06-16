@@ -40,11 +40,11 @@ type ConfigValue = true | false | "hidden";
 type OptionalStringValue = string | "hidden";
 
 interface GnConfig {
-  android32_ndk_api_level?: number;
-  android64_ndk_api_level?: number;
+  android_ndk_api_level?: number;
   clang_use_chrome_plugins: boolean;
   compiler_timing: boolean;
   dcheck_always_on: boolean;
+  default_min_sdk_version?: number;
   is_component_build: boolean;
   is_debug: boolean;
   is_official_build: boolean;
@@ -182,11 +182,8 @@ class GnArgsGenerator {
     }
 
     if (os === "android") {
-      if (this.is64BitArch(arch)) {
-        config.android64_ndk_api_level = 24;
-      } else {
-        config.android32_ndk_api_level = 24;
-      }
+      config.default_min_sdk_version = 24;
+      config.android_ndk_api_level = 24;
     }
 
     // Add optional fields based on platform
@@ -228,11 +225,11 @@ class GnArgsGenerator {
 
     // Convert config to lines in a specific order
     const orderedKeys: (keyof GnConfig)[] = [
-      "android32_ndk_api_level",
-      "android64_ndk_api_level",
+      "android_ndk_api_level",
       "clang_use_chrome_plugins",
       "compiler_timing",
       "dcheck_always_on",
+      "default_min_sdk_version",
       "is_component_build",
       "is_debug",
       "is_official_build",

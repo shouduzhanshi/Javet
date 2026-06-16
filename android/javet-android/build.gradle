@@ -1,0 +1,144 @@
+/*
+ *    Copyright 2021-2023-2026. caoccao.com Sam Cao
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
+class Config {
+    static final int ANDROID_MIN_SDK = 24
+    static final String GROUP_ID = 'com.caoccao.javet'
+    static final String NAME = 'Javet Android'
+    static final String VERSION = Versions.JAVET
+    static final String URL = 'https://github.com/caoccao/Javet'
+
+    static class Pom {
+        static final String ARTIFACT_ID = 'javet-android'
+        static final String DESCRIPTION = 'Javet is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.'
+
+        static class Developer {
+            static final String ID = 'caoccao'
+            static final String EMAIL = 'sjtucaocao@gmail.com'
+            static final String NAME = 'Sam Cao'
+            static final String ORGANIZATION = 'caoccao.com'
+            static final String ORGANIZATION_URL = 'https://www.caoccao.com'
+        }
+
+        static class License {
+            static final String NAME = 'APACHE LICENSE, VERSION 2.0'
+            static final String URL = 'https://github.com/caoccao/Javet/blob/main/LICENSE'
+        }
+
+        static class Scm {
+            static final String CONNECTION = 'scm:git:git://github.com/Javet.git'
+            static final String DEVELOPER_CONNECTION = 'scm:git:ssh://github.com/Javet.git'
+        }
+    }
+
+    static class Projects {
+        // https://androidx.tech/artifacts/test.ext/junit
+        static final String ANDROIDX_ESPRESSO_CORE = "androidx.test.espresso:espresso-core:${Versions.ANDROIDX_ESPRESSO_CORE}"
+
+        // https://androidx.tech/artifacts/test.espresso/espresso-core/
+        static final String ANDROIDX_TEST = "androidx.test.ext:junit:${Versions.ANDROIDX_TEST}"
+
+        // https://mvnrepository.com/artifact/androidx.appcompat/appcompat
+        static final String APPCOMPAT = "androidx.appcompat:appcompat:${Versions.APPCOMPAT}"
+
+        // https://developer.android.com/studio/write/java8-support
+        // https://mvnrepository.com/artifact/com.android.tools/desugar_jdk_libs
+        static final String DESUGAR_JDK_LIBS = "com.android.tools:desugar_jdk_libs:${Versions.DESUGAR_JDK_LIBS}"
+
+        // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+        static final String JUNIT_JUPITER_API = "org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT}"
+
+        // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
+        static final String JUNIT_JUPITER_ENGINE = "org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT}"
+    }
+
+    static class Versions {
+        static final String ANDROIDX_ESPRESSO_CORE = '3.5.1'
+        static final String ANDROIDX_TEST = '1.1.5'
+        static final String APPCOMPAT = '1.3.1'
+        static final String DESUGAR_JDK_LIBS = '2.0.4'
+        static final String JAVET = '5.0.8'
+        static final String JUNIT = '5.10.1'
+    }
+}
+
+plugins {
+    id 'com.android.library'
+}
+
+group = Config.GROUP_ID
+version = Config.VERSION
+
+android {
+    compileSdk 30
+    namespace Config.GROUP_ID
+
+    defaultConfig {
+        minSdk Config.ANDROID_MIN_SDK
+
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lint {
+        abortOnError false
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs 'src/main/java'
+            jniLibs.srcDirs 'src/main/jniLibs'
+        }
+    }
+}
+
+dependencies {
+    coreLibraryDesugaring Config.Projects.DESUGAR_JDK_LIBS
+    implementation Config.Projects.APPCOMPAT
+    testImplementation Config.Projects.JUNIT_JUPITER_API
+    testRuntimeOnly Config.Projects.JUNIT_JUPITER_ENGINE
+    androidTestImplementation Config.Projects.ANDROIDX_ESPRESSO_CORE
+    androidTestImplementation Config.Projects.ANDROIDX_TEST
+}
+
+tasks.register('sourceJar', Jar) {
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier.set('sources')
+}
+
+tasks.register('syncSourceCode', Exec) {
+    workingDir "$projectDir/../../scripts/python"
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd', '/c', 'python', 'patch_android_build.py'
+    } else {
+        commandLine 'sh', '-c', 'python3 patch_android_build.py'
+    }
+}
