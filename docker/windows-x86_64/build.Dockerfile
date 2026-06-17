@@ -34,7 +34,6 @@
 ARG JAVET_NODE_VERSION=24.16.0
 ARG JAVET_V8_VERSION=14.9.207.14
 ARG JAVET_VERSION=5.0.8
-ARG TEMPORAL_VERSION=0.1.2
 
 ###########################################
 # Stage 1: Base with common dependencies
@@ -44,12 +43,10 @@ FROM mcr.microsoft.com/windows/server:ltsc2022 AS base
 ARG JAVET_NODE_VERSION
 ARG JAVET_V8_VERSION
 ARG JAVET_VERSION
-ARG TEMPORAL_VERSION
 
 ENV JAVET_NODE_VERSION=${JAVET_NODE_VERSION}
 ENV JAVET_V8_VERSION=${JAVET_V8_VERSION}
 ENV JAVET_VERSION=${JAVET_VERSION}
-ENV TEMPORAL_VERSION=${TEMPORAL_VERSION}
 ENV ROOT=C:/
 
 SHELL ["cmd", "/S", "/C"]
@@ -76,14 +73,6 @@ RUN powershell -Command "\
     $ProgressPreference = 'SilentlyContinue'; \
     irm https://deno.land/install.ps1 | iex"
 RUN setx /M PATH "C:\Users\ContainerAdministrator\.deno\bin;%PATH%"
-
-# Install Rust
-RUN powershell -Command "\
-    $ProgressPreference = 'SilentlyContinue'; \
-    Invoke-WebRequest -Uri 'https://win.rustup.rs/x86_64' -OutFile 'rustup-init.exe'; \
-    .\rustup-init.exe -y --default-toolchain stable; \
-    Remove-Item rustup-init.exe"
-RUN setx /M PATH "C:\Users\ContainerAdministrator\.cargo\bin;%PATH%"
 
 # Install Visual Studio 2022 Community
 # https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-community
@@ -155,16 +144,6 @@ RUN cd google\v8 && \
     ..\depot_tools\ninja.bat -C out.gn\x64.release v8_monolith || deno --allow-all C:\Javet\src\scripts\deno\patch_v8_build.ts -p .\ && \
     ..\depot_tools\ninja.bat -C out.gn\x64.release v8_monolith && \
     move out.gn out.gn.windows.i18n
-
-# Build Temporal CAPI
-RUN cd C:\ && \
-    git clone https://github.com/boa-dev/temporal.git && \
-    cd temporal && \
-    git checkout v%TEMPORAL_VERSION% && \
-    deno run --allow-all C:\Javet\scripts\deno\patch_v8_temporal.ts -p .\ && \
-    cargo build --release --package temporal_capi --features compiled_data,zoneinfo64 && \
-    copy target\release\temporal_capi.lib C:\google\v8\out.gn.windows.non-i18n\x64.release\obj && \
-    copy target\release\temporal_capi.lib C:\google\v8\out.gn.windows.i18n\x64.release\obj
 
 # Copy i18n data
 RUN mkdir C:\icu-v8 && \

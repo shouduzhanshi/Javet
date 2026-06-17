@@ -10,7 +10,6 @@ env:
   JAVET_NODE_VERSION: 24.16.0
   JAVET_V8_VERSION: 14.9.207.14
   JAVET_VERSION: 5.0.8
-  TEMPORAL_VERSION: 0.2.3
   ROOT: D:\a\Javet
 
 jobs:
@@ -48,11 +47,6 @@ jobs:
       with:
         deno-version: v2.x
 
-    - name: Setup Rust
-      uses: actions-rust-lang/setup-rust-toolchain@v1
-      with:
-        toolchain: stable
-
     - name: Setup Path
       run: |
         echo "${{ env.ROOT }}\google\depot_tools" >> $GITHUB_PATH
@@ -79,17 +73,6 @@ jobs:
         cp ../../Javet/scripts/v8/gn/windows-x86_64-${{ matrix.name }}-args.gn out.gn.windows.${{ matrix.name }}/x64.release/args.gn
         ../depot_tools/gn.bat gen out.gn.windows.${{ matrix.name }}/x64.release
         ../depot_tools/ninja.bat -C out.gn.windows.${{ matrix.name }}/x64.release v8_monolith
-
-    - name: Build Temporal CAPI
-      shell: bash
-      run: |
-        cd ..
-        git clone https://github.com/boa-dev/temporal.git
-        cd temporal
-        git checkout v${{ env.TEMPORAL_VERSION }}
-        deno run --allow-all ../Javet/scripts/deno/patch_v8_temporal.ts -p ./
-        cargo build --release --package temporal_capi --features compiled_data,zoneinfo64
-        cp target/release/temporal_capi.lib ../google/v8/out.gn.windows.${{ matrix.name }}/x64.release/obj
 
     - name: Copy the i18n
       if: matrix.name == 'i18n'

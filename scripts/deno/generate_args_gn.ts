@@ -167,7 +167,7 @@ class GnArgsGenerator {
       v8_enable_i18n_support: i18n,
       v8_enable_pointer_compression: enablePointerCompression,
       v8_enable_sandbox: this.shouldEnableSandbox(os, arch),
-      v8_enable_temporal_support: true,
+      v8_enable_temporal_support: false,
       v8_enable_webassembly: true,
       v8_monolithic: true,
       v8_monolithic_for_shared_library: true,

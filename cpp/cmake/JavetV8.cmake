@@ -62,6 +62,5 @@ if(DEFINED ENABLE_I18N)
     list(APPEND includeDirs
         ${V8_DIR}/third_party/icu/source/common)
 endif()
-add_definitions(-DV8_TEMPORAL_SUPPORT)
-list(APPEND importLibraries v8_monolith temporal_capi)
+list(APPEND importLibraries v8_monolith)
 set(JAVET_LIB_TYPE "v8")

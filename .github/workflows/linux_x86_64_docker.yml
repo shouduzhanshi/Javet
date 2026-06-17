@@ -11,7 +11,6 @@ env:
   JAVET_VERSION: 5.0.8
   JAVET_NODE_VERSION: 24.16.0
   JAVET_V8_VERSION: 14.9.207.14
-  TEMPORAL_VERSION: 0.2.3
 
 jobs:
   build_docker_image:
@@ -38,7 +37,6 @@ jobs:
           JAVET_VERSION=${{ env.JAVET_VERSION }}
           JAVET_NODE_VERSION=${{ env.JAVET_NODE_VERSION }}
           JAVET_V8_VERSION=${{ env.JAVET_V8_VERSION }}
-          TEMPORAL_VERSION=${{ env.TEMPORAL_VERSION }}
 
     - name: Extract artifacts from Docker image
       run: |
