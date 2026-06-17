@@ -182,8 +182,8 @@ class GnArgsGenerator {
     }
 
     if (os === "android") {
-      config.default_min_sdk_version = 24;
-      config.android_ndk_api_level = 24;
+      config.default_min_sdk_version = 21;
+      config.android_ndk_api_level = 21;
     }
 
     // Add optional fields based on platform

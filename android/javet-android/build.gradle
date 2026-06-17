@@ -18,7 +18,7 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 class Config {
-    static final int ANDROID_MIN_SDK = 24
+    static final int ANDROID_MIN_SDK = 21
     static final String GROUP_ID = 'com.caoccao.javet'
     static final String NAME = 'Javet Android'
     static final String VERSION = Versions.JAVET

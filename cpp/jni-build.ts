@@ -29,7 +29,7 @@
  *   deno run build --os linux --arch arm64 --v8-dir ${HOME}/v8
  *   deno run build --os macos --arch arm64 --v8-dir ${HOME}/v8
  *   deno run build --os windows --arch x86_64 --v8-dir C:\\v8
- *   deno run build --os android --arch arm64 --v8-dir ${HOME}/v8 --android-ndk ${HOME}/android --android-api 24
+ *   deno run build --os android --arch arm64 --v8-dir ${HOME}/v8 --android-ndk ${HOME}/android --android-api 21
  *
  *   # Node builds
  *   deno run build --os linux --arch x86_64 --node-dir ${HOME}/node
