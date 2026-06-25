@@ -64,7 +64,7 @@ RUN echo V8 preparation is completed.
 # Build V8
 WORKDIR /google/v8
 RUN sed -i -e "s/target_cpu=\"x64\" v8_target_cpu=\"arm64/target_cpu=\"arm64\" v8_target_cpu=\"arm64/" infra/mb/mb_config.pyl
-RUN python3 tools/dev/v8gen.py arm64.release -- 'target_cpu="arm64"' 'v8_target_cpu="arm64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false 'clang_base_path="/usr/lib/llvm-15"' clang_use_chrome_plugins=false blink_gc_plugin=false
+RUN python3 tools/dev/v8gen.py arm64.release -- 'target_cpu="arm64"' 'v8_target_cpu="arm64"' v8_monolithic=true v8_use_external_startup_data=false is_component_build=false v8_enable_i18n_support=false v8_enable_pointer_compression=false v8_enable_webassembly=false v8_static_library=true symbol_level=0 use_custom_libcxx=false v8_enable_sandbox=false 'clang_base_path="/usr/lib/llvm-15"' clang_use_chrome_plugins=false blink_gc_plugin=false
 COPY ./scripts/python/patch_v8_build.py .
 RUN ninja -C out.gn/arm64.release v8_monolith || python3 patch_v8_build.py -p ./
 RUN ninja -C out.gn/arm64.release v8_monolith

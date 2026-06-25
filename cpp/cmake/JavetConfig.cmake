@@ -90,4 +90,4 @@ else()
 endif()
 
 # Common definitions
-add_definitions(-DV8_ENABLE_WEBASSEMBLY -DV8_ENABLE_LEAPTIERING)
+add_definitions(-DV8_ENABLE_LEAPTIERING)
